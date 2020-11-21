@@ -10,6 +10,8 @@ numberOfSubtests = 0
 numberOfSucessfullSubTests = 0
 numberOfSubtestsNotSucessFull = 0
 
+listOfSucessfullTests = []
+
 def t_NUMBEROFTESTS(t): 
     r"[1][.][.][0-9]+"
     global subTestsEntering, numberOfSubtests, nTests
@@ -26,7 +28,11 @@ def t_NUMBEROFTESTS(t):
 def t_SUCESSFULLTESTS(t): 
     r"ok[ ][0-9]+([ ][-#][ ].+)?"
     
-    global numberOfSucessfullTests, numberOfSucessfullSubTests
+    global numberOfSucessfullTests, numberOfSucessfullSubTests, listOfSucessfullTests
+    
+    print(len(listOfSucessfullTests))
+
+    listOfSucessfullTests[len(listOfSucessfullTests)] = 
 
     if subTestsEntering == 0:
         numberOfSucessfullTests += 1
@@ -95,4 +101,7 @@ if numberOfSubtests > 0:
     print("Percentage of not sucessfull subtests:", numberOfSubtestsNotSucessFull / numberOfSubtests * 100, "%")
 else:
     print("Percentage of not sucessfull subtests: 0%") 
+    
+print("-----------------------------------------------------------------------------------------")
+print (listOfSucessfullTests)
 
