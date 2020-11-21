@@ -1,4 +1,6 @@
 import ply.lex as lex
+import sys
+import os
 
 from html import Html
 from utils import Utils
@@ -10,6 +12,7 @@ numberOfNotSucessfullTests = 0
 nTests = 0
 subTestsEntering = 0
 numberOfSubtests = 0
+counterSub = 0
 numberOfSucessfullSubTests = 0
 numberOfSubtestsNotSucessFull = 0
 
@@ -18,13 +21,14 @@ listOfSucessfullTests = []
 
 def t_NUMBEROFTESTS(t):
     r"[1][.][.][0-9]+"
-    global subTestsEntering, numberOfSubtests, nTests
+    global subTestsEntering, numberOfSubtests, nTests, counterSub
 
     if subTestsEntering == 0:
         nTests = int(t.value[3:])
     else:
         numberOfSubtests += int(t.value[3:])
         subTestsEntering -= 1
+        counterSub += int(t.value[3:])
 
     return t
 
@@ -32,14 +36,15 @@ def t_NUMBEROFTESTS(t):
 def t_SUCESSFULLTESTS(t):
     r"ok[ ][0-9]+([ ][-#][ ].+)?"
 
-    global numberOfSucessfullTests, numberOfSucessfullSubTests, listOfSucessfullTests
+    global numberOfSucessfullTests, numberOfSucessfullSubTests, listOfSucessfullTests, counterSub
 
     listOfSucessfullTests.append(t)
 
-    if subTestsEntering == 0:
+    if subTestsEntering == 0 & counterSub == 0:
         numberOfSucessfullTests += 1
     else:
         numberOfSucessfullSubTests += 1
+        counterSub -= 1
 
     return t
 
@@ -47,12 +52,15 @@ def t_SUCESSFULLTESTS(t):
 def t_NOTSUCESSFULLTESTS(t):
     r"not[ ]ok[ ][0-9]+([ ][-#][ ].+)?"
 
-    global numberOfNotSucessfullTests, numberOfSubtestsNotSucessFull
+    global numberOfNotSucessfullTests, numberOfSubtestsNotSucessFull, counterSub, listOfSucessfullTests
 
-    if subTestsEntering == 0:
+    listOfSucessfullTests.append(t)
+
+    if subTestsEntering == 0 & counterSub == 0:
         numberOfNotSucessfullTests += 1
     else:
         numberOfSubtestsNotSucessFull += 1
+        counterSub -= 1
 
     return t
 
@@ -73,8 +81,6 @@ def t_COMMENTS(t):
     return t
 
 
-# não lê os tabs do ficheiro
-
 t_ignore = " \n"
 
 
@@ -84,14 +90,56 @@ def t_error(t):
 
 
 lexer = lex.lex()
-file = "Testes/teste3.txt"
-f = open(file, "r")
-
-lexer.input(f.read())
-
-
-for token in iter(lexer.token, None):
+file = sys.argv[1]  
+f = ""
+_isFile = False
+# If it gets a file as an argument
+try:
+    f = open("Testes/" + file, "r")
+    _isFile = True
+except:
     pass
+
+# If it gets a folder as an argument 
+teste3 = ""
+if _isFile == False:
+    teste4 = Html.CreateHtmlMain(None)
+    for file in os.listdir(sys.argv[1]):
+
+        t = open(sys.argv[1] + "/" + file, "r")
+        
+        lexer.input(t.read())
+        
+        
+        for token in iter(lexer.token, None):
+            pass
+
+        testNumber = Utils.GetNumberOfFile(None, file)
+        teste3 = Html.CreateHtmlString(None, testNumber, listOfSucessfullTests)
+        
+        Html.HtmlStringToHtml(None, teste3, file[:-4])
+        
+        teste4 = Html.AddHtmlLineHyperLink(None, teste4, file[:-4], file[:-4])
+        t.close()
+        listOfSucessfullTests.clear()
+    teste4 = Html.CloseHtmlMain(None, teste4)
+    Html.HtmlStringToHtml(None, teste4, "Main")
+
+else:
+    lexer.input(f.read())
+    for token in iter(lexer.token, None): 
+            pass
+
+    testNumber = Utils.GetNumberOfFile(None, file)
+    teste3 = None
+    teste3 = Html.CreateHtmlString(None, testNumber, listOfSucessfullTests)
+        
+    Html.HtmlStringToHtml(None, teste3, file[:-4])
+    f.close()
+
+
+
+
 
 print("Number of tests:", nTests)
 print("Sucessfull tests:", numberOfSucessfullTests)
@@ -103,13 +151,4 @@ if numberOfSubtests > 0:
 else:
     print("Percentage of not sucessfull subtests: 0%")
 
-print("-----------------------------------------------------------------------------------------")
-for token in listOfSucessfullTests:
-    print(token.value)
-print("-----------------------------------------------------------------------------------------")
 
-inteiro = Utils.GetNumberOfFile(None, file)
-
-teste3 = Html.CreateHtmlString(None, inteiro, listOfSucessfullTests)
-print(inteiro)
-Html.HtmlStringToHtml(None, teste3)

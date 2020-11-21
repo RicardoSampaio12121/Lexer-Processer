@@ -24,20 +24,18 @@ class Utils:
     def GetNumberFromToken(self, token):
         number = ""
         i = 0
+        
         if token.value[0] == 'o':
             aux = token.value[3:]
         else:
-            aux = token.value[8:]
-
-        print(aux)
-        print(len(aux))
-        print(i)
+            aux = token.value[6:]
+        
         while aux != ' ':
+           
             number += aux[i]
             i += 1
             if len(aux) == i:
                 break
 
-        print("sai do while")
         return number
 
