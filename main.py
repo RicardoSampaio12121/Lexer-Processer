@@ -1,3 +1,9 @@
+#Author: Ricardo Sampaio
+#Author: Cláudio Silva
+#Date: 22/11/2020
+#Resumo: Lexer processor that reads TAP documents and makes reports via terminal and html dcocuments
+
+
 import ply.lex as lex
 import sys
 import os
@@ -17,9 +23,10 @@ numberOfSucessfullSubTests = 0
 numberOfSubtestsNotSucessFull = 0
 numberOfSubTests = 0
 
+
 #And lists
 listOfSucessfullTests = []
-comments = []
+comments = {}
 
 
 def t_NUMBEROFTESTS(t):
@@ -36,12 +43,12 @@ def t_NUMBEROFTESTS(t):
 
 
 def t_SUCESSFULLTESTS(t):
-    r"ok[ ][0-9]+([ ][-#][ ].+)?"
+    r"ok[ ][0-9]+([ ][-][ ].+)?"
 
-    global numberOfSucessfullTests, numberOfSucessfullSubTests, listOfSucessfullTests, counterSub, numberOfSubTests
+    global numberOfSucessfullTests, numberOfSucessfullSubTests, listOfSucessfullTests, counterSub, numberOfSubTests, currentTest
 
     listOfSucessfullTests.append(t)
-
+    currentTest = t
     if subTestsEntering == 0 & counterSub == 0:
         numberOfSucessfullTests += 1
 
@@ -54,10 +61,13 @@ def t_SUCESSFULLTESTS(t):
 
 
 def t_NOTSUCESSFULLTESTS(t):
-    r"not[ ]ok[ ][0-9]+([ ][-#][ ].+)?"
+    r"not[ ]ok[ ][0-9]+([ ][-][ ].+)?"
 
-    global numberOfNotSucessfullTests, numberOfSubtestsNotSucessFull, counterSub, listOfSucessfullTests, numberOfSubTests
+    global currentTest, numberOfNotSucessfullTests, numberOfSubtestsNotSucessFull, counterSub, listOfSucessfullTests, numberOfSubTests
+    
     listOfSucessfullTests.append(t)
+
+    currentTest = t
 
     if subTestsEntering == 0 & counterSub == 0:
         numberOfNotSucessfullTests += 1
@@ -73,7 +83,8 @@ def t_NOTSUCESSFULLTESTS(t):
 def t_SUBTEST(t):
     r"[#][ ]Subtest[:].+"
 
-    global subTestsEntering
+    global subTestsEntering, currentTest
+    currentTest = t
     subTestsEntering += 1
 
     return t
@@ -81,7 +92,7 @@ def t_SUBTEST(t):
 
 def t_COMMENTS(t):
     r"[#].+"
-    comments.append(t)
+    comments[t.value] = currentTest
     return t
 
 
@@ -146,13 +157,13 @@ if _isFile == False:
             next_link = Utils.NextFileInDirectory(None, sys.argv[1], file)
 
         #Builds the html document in a string
-        htmlString = Html.CreateHtmlString(None, file[:-4], listOfSucessfullTests, previous_link, next_link, comments, numberOfSucessfullSubTests+numberOfSucessfullTests, nTests + numberOfSubTests)
+        htmlString = Html.CreateHtmlString(None, file[:-2], listOfSucessfullTests, previous_link, next_link, comments, numberOfSucessfullSubTests+numberOfSucessfullTests, nTests + numberOfSubTests)
         
         #Converts the html in the string to a .html document
-        Html.HtmlStringToHtml(None, htmlString, file[:-4])
+        Html.HtmlStringToHtml(None, htmlString, file[:-2])
         
         #Adds an hyperlink to the document created in the previous line in the main .html file
-        htmlMain = Html.AddHtmlLineHyperLink(None, htmlMain, file[:-4], file[:-4])
+        htmlMain = Html.AddHtmlLineHyperLink(None, htmlMain, file[:-2], file[:-2])
         
         t.close()
 
@@ -181,10 +192,10 @@ else:
         pass
     
     #Builds the html document in a string
-    htmlString = Html.CreateHtmlString(None, file[:-4], listOfSucessfullTests, "noPrevious", "noNext", comments, numberOfSucessfullSubTests+numberOfSucessfullTests, nTests + numberOfSubTests)
+    htmlString = Html.CreateHtmlString(None, file[:-2], listOfSucessfullTests, "noPrevious", "noNext", comments, numberOfSucessfullSubTests+numberOfSucessfullTests, nTests + numberOfSubTests)
     
     #Converts the string to a .html
-    Html.HtmlStringToHtml(None, htmlString, file[:-4])
+    Html.HtmlStringToHtml(None, htmlString, file[:-2])
     f.close()
 
     #Print report

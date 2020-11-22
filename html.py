@@ -1,3 +1,7 @@
+#Autho: Ricardo Sampaio
+#Author: Cláudio Silva
+#Date: 22/11/2020
+
 import os
 from utils import Utils
 
@@ -7,17 +11,20 @@ class Html(object):
     def CreateHtmlMain(self):
         main_string =  ""
         main_string += "<body style=\"background-color:#b0e0e6\">\n"
-        main_string += "<h1>INDEX</h1>\n"
+        main_string += "<h1><u>INDEX</u></h1><br>\n"
+        main_string += "<h2>-> Go To File:</h2>\n"
+        main_string += "<h3>\n"
         return main_string
 
     #Adds the hyperlink to the other documents
     def AddHtmlLineHyperLink(self, main_string, path, file):
-        main_string += "\t<a href= " + path + ".html" +">" + file +"</a><br>"
+        main_string += "\t&emsp;<li><a href= " + path + ".html" +">" + file +"</a></li><br>"
         
         return main_string
 
     #Finnished the Main.html file
     def CloseHtmlMain(self, main_string):
+        main_string += "</h3>\n"
         main_string += "</body>\n"
         return main_string
 
@@ -36,9 +43,9 @@ class Html(object):
 
         #Checks if it has to add a previous and or a next button
         if previous != "noPrevious":
-            html_string += "<a href= " + previous[:-4] + ".html" +">" + "---Previous" +"</a><br>"
+            html_string += "<a href= " + previous[:-2] + ".html" +">" + "---Previous" +"</a><br>"
         if next != "noNext":
-            html_string += "<a href= " + next[:-4] + ".html" +">" + "Next>>>" +"</a><br>"
+            html_string += "<a href= " + next[:-2] + ".html" +">" + "Next>>>" +"</a><br>"
 
         #Changes the background color to light blue 
         html_string += "<body style=\"background-color:#b0e0e6\">\n"
@@ -83,13 +90,15 @@ class Html(object):
             #Creates a table and a title row
             html_string += """\t<table style="width:100%">\n"""    
             html_string += "\t\t<br><tr style=\"background-color:#ffa500\">\n"
-            html_string += "\t\t\t<th style=\"text-align:left;background-color:\">Comentários</th>\n"
+            html_string += "\t\t\t<th style=\"text-align:left;background-color:\">Test</th>\n"
+            html_string += "\t\t\t<th style=\"text-align:left;background-color:\">Comment</th>\n"
             html_string += "\t\t</tr>\n"
 
-            #Goes through the list of comments and fills the table with them
+            #Goes through the dictionary of comments and fills the table with them
             for comment in comments:
                 html_string += "\t\t<tr style=\"background-color:#32CD32\">\n"
-                html_string += "\n\t\t\t<th style=\"text-align:left\">" + comment.value + "</th>"                 
+                html_string += "\n\t\t\t<th style=\"text-align:left\">" + comments[comment].value + "</th>"     
+                html_string += "\n\t\t\t<th style=\"text-align:left\">" + comment + "</th>"     
                 html_string += "</tr>"
             
             #Closes the table

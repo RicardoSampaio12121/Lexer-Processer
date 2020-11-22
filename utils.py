@@ -1,15 +1,13 @@
+#Autho: Ricardo Sampaio
+#Author: Cláudio Silva
+#Date: 22/11/2020
+
 import os
 
+#Some methods that helps us through the code
 class Utils:
 
-    def GetNumberOfFile(self, file_path):
-        i = 0
-        while file_path[i + 1] != '.':
-            i += 1
-
-        return int(file_path[i])
-
-
+    #Gets the status from a token("ok" or "not ok")
     def GetStatusFromToken(self, token):
         status = ""
         i = 0
@@ -22,7 +20,7 @@ class Utils:
                 return status
             i += 1
 
-
+    #Gets the number from a token
     def GetNumberFromToken(self, token):
         number = ""
         i = 0
@@ -41,7 +39,7 @@ class Utils:
 
         return number
 
-
+    #Gets which is the next file in the given directory and the current file
     def NextFileInDirectory(self, directory, current_file):
         
         current_passed = False
@@ -56,6 +54,7 @@ class Utils:
 
         return "nada"
 
+    #Gets which is the previous file in the given directory and the current file
     def PreviousFileInDirectory(self, directory, current_file):
 
         for file in os.listdir(directory):
@@ -65,6 +64,7 @@ class Utils:
 
             previous_file = file
 
+    #Prints a simple report to the terminal
     def PrintReport(self, main_tests, number_of_successful_tests, number_of_subtests, number_of_successful_subtests):
         print("Number of main tests: ", main_tests)
         print("Number of successful main tests: ", number_of_successful_tests)
