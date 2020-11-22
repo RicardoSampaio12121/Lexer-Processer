@@ -7,7 +7,6 @@ ok 2
         ok 1 - my other subtest 1
         ok 2 - and another subtest 2
         1..2
-        #Pa puta que pariu
     ok 2 - Some subtests second
     ok 3 - some more subtests
     1..3
